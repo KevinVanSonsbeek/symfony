@@ -21,14 +21,12 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     private string $defaultLocale;
 
     private $initialTestCaseUseException;
-    private $initialTestCaseErrorLevel;
 
     protected function setUp(): void
     {
         // Normalize intl. configuration settings.
         if (\extension_loaded('intl')) {
             $this->initialTestCaseUseException = ini_set('intl.use_exceptions', 0);
-            $this->initialTestCaseErrorLevel = ini_set('intl.error_level', 0);
         }
 
         $this->defaultLocale = \Locale::getDefault();
@@ -41,7 +39,6 @@ class PercentToLocalizedStringTransformerTest extends TestCase
 
         if (\extension_loaded('intl')) {
             ini_set('intl.use_exceptions', $this->initialTestCaseUseException);
-            ini_set('intl.error_level', $this->initialTestCaseErrorLevel);
         }
     }
 
@@ -75,7 +72,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     public function testTransformWithScale()
     {
         // Since we test against "de_AT", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_AT');
 
@@ -224,7 +221,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     public function testReverseTransformWithScale()
     {
         // Since we test against "de_AT", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_AT');
 
@@ -296,7 +293,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     public function testDecimalSeparatorMayBeDotIfGroupingSeparatorIsDotButNoGroupingUsed()
     {
         // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('fr');
         $transformer = new PercentToLocalizedStringTransformer(1, 'integer', \NumberFormatter::ROUND_HALFUP);
@@ -375,7 +372,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
         $this->expectException(TransformationFailedException::class);
         $this->expectExceptionMessage('The number contains unrecognized characters: "foo8"');
         // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('ru');
 
@@ -401,7 +398,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
         $this->expectException(TransformationFailedException::class);
         $this->expectExceptionMessage('The number contains unrecognized characters: "foo"');
         // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('ru');
 
@@ -415,7 +412,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
         $transformer = new PercentToLocalizedStringTransformer(null, null, \NumberFormatter::ROUND_HALFUP, true);
 
         // Since we test against "de_CH", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_CH');
 
@@ -429,7 +426,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
         $transformer = new PercentToLocalizedStringTransformer(null, 'integer', \NumberFormatter::ROUND_HALFUP, true);
 
         // Since we test against "de_CH", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_CH');
 
@@ -440,7 +437,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     public function testTransformForHtml5FormatWithScale()
     {
         // Since we test against "de_CH", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_CH');
 
@@ -452,7 +449,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     public function testReverseTransformForHtml5Format()
     {
         // Since we test against "de_CH", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_CH');
 
@@ -466,7 +463,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     public function testReverseTransformForHtml5FormatWithInteger()
     {
         // Since we test against "de_CH", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_CH');
 
@@ -481,7 +478,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
     public function testReverseTransformForHtml5FormatWithScale()
     {
         // Since we test against "de_CH", we need the full implementation
-        IntlTestHelper::requireFullIntl($this, false);
+        IntlTestHelper::requireFullIntl($this);
 
         \Locale::setDefault('de_CH');
 
@@ -492,6 +489,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
 
     /**
      * @requires extension intl
+     * @requires PHP < 8.5
      */
     public function testReverseTransformWrapsIntlErrorsWithErrorLevel()
     {
@@ -524,6 +522,7 @@ class PercentToLocalizedStringTransformerTest extends TestCase
 
     /**
      * @requires extension intl
+     * @requires PHP < 8.5
      */
     public function testReverseTransformWrapsIntlErrorsWithExceptionsAndErrorLevel()
     {
@@ -546,7 +545,7 @@ class PercentToLocalizedStringTransformerWithoutGrouping extends PercentToLocali
     protected function getNumberFormatter(): \NumberFormatter
     {
         $formatter = new \NumberFormatter(\Locale::getDefault(), \NumberFormatter::DECIMAL);
-        $formatter->setAttribute(\NumberFormatter::GROUPING_USED, false);
+        $formatter->setAttribute(\NumberFormatter::GROUPING_USED, 0);
 
         return $formatter;
     }
