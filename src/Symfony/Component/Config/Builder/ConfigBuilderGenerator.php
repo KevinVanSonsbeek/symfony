@@ -226,7 +226,7 @@ public function NAME(mixed $valueDEFAULT): static
                 $nodeTypesWithoutArray = array_filter($nodeParameterTypes, static fn ($type) => 'array' !== $type);
                 $body = '
 /**
- * @param ParamConfigurator|list<ParamConfigurator|PROTOTYPE_TYPE>EXTRA_TYPE $value
+ * @param ParamConfigurator|ITERABLE_PARAM_TYPE<ParamConfigurator|PROTOTYPE_TYPE>EXTRA_TYPE $value
  *
  * @return $this
  */
@@ -243,6 +243,7 @@ public function NAME(PARAM_TYPE $value): static
                     'PROTOTYPE_TYPE' => implode('|', $prototypeParameterTypes),
                     'EXTRA_TYPE' => $nodeTypesWithoutArray ? '|'.implode('|', $nodeTypesWithoutArray) : '',
                     'PARAM_TYPE' => \in_array('mixed', $nodeParameterTypes, true) ? 'mixed' : 'ParamConfigurator|'.implode('|', $nodeParameterTypes),
+                    'ITERABLE_PARAM_TYPE' => $node->getNormalizeKeys() ? 'list' : 'array',
                 ]);
             } else {
                 $body = '
